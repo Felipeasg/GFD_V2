@@ -211,7 +211,7 @@ static void GFDMonitorTask(void)
 	{
 		float current = 0.0;
 
-		current = meassurements_GetRMS();
+		current = meassurements_GetCurrRMS();
 
 		GFDProtocol_SendData(MESSAGE_GET_CURRENT, &current, sizeof(float));
 	}

@@ -10,6 +10,8 @@
 
 void meassurements_Init(void);
 void meassurements_Start();
-float meassurements_GetRMS(void);
+float meassurements_GetCurrRMS(void);
+float meassurements_GetVT(void);
+float meassurements_GetVP(void);
 
 #endif /* MEASSUREMENTS_H_ */

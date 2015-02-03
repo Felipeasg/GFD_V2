@@ -22,19 +22,22 @@ float in, out[2];
 float x[3];
 float y[3];
 
+uint32_t u32_adVp = 0;
+uint32_t u32_adVt = 0;
+
 static float k = 0;
 
 //ACS712 -> 185mV - 1A
 /*
- * Como temos um filtro passa alta na entrada e o sinal do ad é unitário pois é dividio por
+ * Como temos um filtro passa alta na entrada e o sinal do ad ï¿½ unitï¿½rio pois ï¿½ dividio por
  * 4095 logo na entrada do filtro temos que um sinal de 3.3 volts senoidal
- * variando de 0 - 3.3V na entrada do ad será um sinal variando senoidal variando de -0.5 - 0.5
+ * variando de 0 - 3.3V na entrada do ad serï¿½ um sinal variando senoidal variando de -0.5 - 0.5
  * na saida do filtro digital.
- * -> 0.5 equivale então a 3.3V na entrada e -0.5 equivale a 0V
+ * -> 0.5 equivale entï¿½o a 3.3V na entrada e -0.5 equivale a 0V
  * -> no ACS712 temos que para cada 185mV - 1A
  *
- * Como a referencia está em 1.65V e valor máximo é 3.3V o valor máximo de corrente
- * medido será correspondente a 1.65V
+ * Como a referencia estï¿½ em 1.65V e valor mï¿½ximo ï¿½ 3.3V o valor mï¿½ximo de corrente
+ * medido serï¿½ correspondente a 1.65V
  *
  * logo 3.3V  = 17.837837837 A
  *      1.65V = 8.9189489185 A
@@ -77,12 +80,15 @@ void meassurements_Start()
 
 static void meassurent_handler(volatile uint32_t* smp)
 {
+	u32_adVp = *(smp + 0);
+	u32_adVt = *(smp + 1);
 	//in = fastabs(((float)(*smp))/4095);
+//	(smp + 2) - IN3 ADC3 -> PIN PA3
 
 	//Filtro para frequencia de amostragem de 10000 e frequencia de corte em 60HZ
 	x[0] = x[1];
 	x[1] = x[2];
-	x[2] = ((*smp/4095.0));
+	x[2] = ((*(smp+2)/4095.0));
 
 
 	y[2] = x[0] - (2*x[1]) + x[2] - (0.9565436765 * y[0]) + (1.9555782403 * y[1]);
@@ -106,7 +112,19 @@ static void meassurent_handler(volatile uint32_t* smp)
 
 }
 
-float meassurements_GetRMS(void)
+float meassurements_GetCurrRMS(void)
 {
 	return sqrtf(out[1]);
 }
+
+float meassurements_GetVT(void)
+{
+	return (float)(u32_adVt)*0.000805861;
+}
+
+float meassurements_GetVP(void)
+{
+	return (float)(u32_adVp)*0.000805861;
+}
+
+
