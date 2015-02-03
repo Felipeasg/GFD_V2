@@ -11,7 +11,7 @@
     @brief                                                                            
 
     @note
-		 Copyright (C) ALTRIZ - Automação Industrial                                                            
+		 Copyright (C) ALTRIZ - Automaï¿½ï¿½o Industrial                                                            
 
  **************************************************************************************
  */
@@ -136,7 +136,7 @@ static void prvSetTriggerForADC(void)
 static void prvRCCConfig( void )
 {
 	/* Enable peripheral clocks */
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2 | RCC_AHB1Periph_GPIOC, ENABLE);// | RCC_AHB1Periph_GPIOB, ENABLE);
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_DMA2 | RCC_AHB1Periph_GPIOA, ENABLE);// | RCC_AHB1Periph_GPIOB, ENABLE);
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_ADC1,ENABLE); //| RCC_APB2Periph_ADC2 | RCC_APB2Periph_ADC3 , ENABLE);
 
@@ -149,22 +149,10 @@ static void prvGPIOConfig( void )
 {
 	GPIO_InitTypeDef      GPIO_InitStructure;
 
-	/* Configure ADC Channels pin as analog input */
-//	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_3;
-//	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
-//	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
-//	GPIO_Init(GPIOA, &GPIO_InitStructure);
-
-	/* Configure ADC Channel pin as analog input */
-//	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_1;
-//	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
-//	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
-//	GPIO_Init(GPIOB, &GPIO_InitStructure);
-
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_4;
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_3;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AN;
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL ;
-	GPIO_Init(GPIOC, &GPIO_InitStructure);
+	GPIO_Init(GPIOA, &GPIO_InitStructure);
 }
 
 /**
@@ -245,17 +233,13 @@ void adcbsp_Init( void )
 
 	/* After the timer 2 trigger the three ADCs are converted as follows:
 	 *
-	 *           R      R
-	 *           A      A
-	 *           N      N
-	 *           K      K
-	 *          (1)    (2)
+	 *           R
+	 *           A
+	 *           N
+	 *           K
+	 *          (1)
 	 *         ---------------------
- 	 *  ADC1   |CH0|  |CH3|    ...
- 	 *         ---------------------
- 	 *  ADC2   |CH1|  |CH9|    ...
- 	 *         ---------------------
- 	 *  ADC3   |CH2|  |CH0|    ...
+ 	 *  ADC1   |CH0|
  	 *         ---------------------
  	 *         .				 .
  	 *        / \               / \
@@ -285,61 +269,16 @@ void adcbsp_Init( void )
 
 	ADC_Init(ADC1, &ADC_InitStructure);
 	/* ADC1 RANK configuration */
-	ADC_RegularChannelConfig(ADC1, ADC_Channel_14, 1, ADC_SampleTime_3Cycles); //RANK 1 - ADC1 read channel 0
-//	ADC_RegularChannelConfig(ADC1, ADC_Channel_3, 2, ADC_SampleTime_3Cycles); //RANK 2 - ADC1 read channel 3
+	ADC_RegularChannelConfig(ADC1, ADC_Channel_3, 1, ADC_SampleTime_3Cycles); //RANK 2 - ADC1 read channel 3
 
 
 	/* Enable ADC1 DMA */
 	/* ADC1 is mater, is not necessary enable DMA for ADC2 and ADC3*/
 	ADC_DMACmd(ADC1, ENABLE);
 
-#if 0
-	/* ADC2 regular channel configuration ************************************/
-	ADC_InitStructure.ADC_Resolution = ADC_Resolution_12b;
-	ADC_InitStructure.ADC_ScanConvMode = ENABLE; //SCAN all channels enable in RANK
-	ADC_InitStructure.ADC_ContinuousConvMode = DISABLE; //ADC conversion triggered for timer
-	ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConv_T2_TRGO; //Regular channel trigger
-	ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_Rising;
-	ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
-	ADC_InitStructure.ADC_NbrOfConversion = 2; //Number of SCAN conversions or number of RANK conversions
-
-	ADC_Init(ADC2, &ADC_InitStructure);
-	/* ADC2 RANK configuration */
-	ADC_RegularChannelConfig(ADC2, ADC_Channel_1, 1, ADC_SampleTime_3Cycles); //RANK 1 - ADC2 read channel 1
-	ADC_RegularChannelConfig(ADC2, ADC_Channel_9, 2, ADC_SampleTime_3Cycles); //RANK 2 - ADC2 read channel 9
-
-	/* ADC3 regular channel configuration ************************************/
-	ADC_InitStructure.ADC_Resolution = ADC_Resolution_12b;
-	ADC_InitStructure.ADC_ScanConvMode = ENABLE;
-	ADC_InitStructure.ADC_ContinuousConvMode = DISABLE; //Inject channels cannot be converted continuously.
-	ADC_InitStructure.ADC_ExternalTrigConv = ADC_ExternalTrigConv_T2_TRGO; //Regular channel trigger
-	ADC_InitStructure.ADC_ExternalTrigConvEdge = ADC_ExternalTrigConvEdge_Rising;
-	ADC_InitStructure.ADC_DataAlign = ADC_DataAlign_Right;
-	ADC_InitStructure.ADC_NbrOfConversion = 2; //Number of SCAN conversions or number of RANK conversions
-
-	/* ADC3 regular channel 2 configuration ************************************/
-	ADC_Init(ADC3, &ADC_InitStructure);
-	/* ADC3 RANK configuration */
-	ADC_RegularChannelConfig(ADC3, ADC_Channel_2, 1, ADC_SampleTime_3Cycles); //RANK 1 - ADC3 read channel 2
-	ADC_RegularChannelConfig(ADC3, ADC_Channel_0, 2, ADC_SampleTime_3Cycles); //RANK 2 - ADC2 read channel 0
-
-	/* Enable DMA request after last transfer (multi-ADC mode) ******************/
-	ADC_MultiModeDMARequestAfterLastTransferCmd(ENABLE);
-#endif
-
 	ADC_DMARequestAfterLastTransferCmd(ADC1, ENABLE);
 	/* Enable ADC1 */
 	ADC_Cmd(ADC1, ENABLE);
-
-#if 0
-	/* Enable ADC2 */
-	ADC_Cmd(ADC2, ENABLE);
-
-	/* Enable ADC3 */
-	ADC_Cmd(ADC3, ENABLE);
-#endif
-	/* TIM1 counter enable to trigger ADC*/
-//	TIM_Cmd(TIM2, ENABLE);
 
 	b_adcInitialized = true;
 
