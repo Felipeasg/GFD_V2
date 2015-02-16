@@ -5,7 +5,7 @@
 
 #include "stm32f4_discovery.h"
 #include "utils.h"
-//#include "iprintf.h"
+#include "iprintf.h"
 #include "adcbsp.h"
 #include "usart1bsp.h"
 #include "stream.h"

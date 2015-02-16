@@ -16,6 +16,9 @@
 
 #define ACS_GAIN 17.837837837*17.837837837
 
+#define AD_VT_GAIN	3.3/4095
+#define AD_VP_GAIN	3.3/4095
+
 static float a = 0;
 float in, out[2];
 
@@ -119,12 +122,12 @@ float meassurements_GetCurrRMS(void)
 
 float meassurements_GetVT(void)
 {
-	return (float)(u32_adVt)*0.000805861;
+	return (float)(u32_adVt)*AD_VT_GAIN;
 }
 
 float meassurements_GetVP(void)
 {
-	return (float)(u32_adVp)*0.000805861;
+	return (float)(u32_adVp)*AD_VP_GAIN;
 }
 
 

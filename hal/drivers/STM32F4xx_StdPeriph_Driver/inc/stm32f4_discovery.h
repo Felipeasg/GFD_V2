@@ -52,8 +52,10 @@ typedef enum
   LED3 = 1,
   LED5 = 2,
   LED6 = 3,
-  RELAY_1G,
-  RELAY_2G,
+  RELAY_1BP = 4,
+  RELAY_2BP = 5,
+  RELAY_1BN = 6,
+  RELAY_2BN = 7
 } Led_TypeDef;
 
 typedef enum 
@@ -104,13 +106,21 @@ typedef enum
 #define LED6_GPIO_PORT                   GPIOD
 #define LED6_GPIO_CLK                    RCC_AHB1Periph_GPIOD
 
-#define RELAY_1G_PIN                     GPIO_Pin_7
-#define RELAY_1G_GPIO_PORT               GPIOE
-#define RELAY_1G_GPIO_CLK                RCC_AHB1Periph_GPIOE
+#define RELAY_1_B_POS_PIN                     GPIO_Pin_13
+#define RELAY_1_B_POS_GPIO_PORT               GPIOB
+#define RELAY_1_B_POS_GPIO_CLK                RCC_AHB1Periph_GPIOB
 
-#define RELAY_2G_PIN                     GPIO_Pin_9
-#define RELAY_2G_GPIO_PORT               GPIOD
-#define RELAY_2G_GPIO_CLK                RCC_AHB1Periph_GPIOD
+#define RELAY_2_B_POS_PIN                     GPIO_Pin_15
+#define RELAY_2_B_POS_GPIO_PORT               GPIOB
+#define RELAY_2_B_POS_GPIO_CLK                RCC_AHB1Periph_GPIOB
+
+#define RELAY_1_B_NEG_PIN                     GPIO_Pin_9
+#define RELAY_1_B_NEG_GPIO_PORT               GPIOD
+#define RELAY_1_B_NEG_GPIO_CLK                RCC_AHB1Periph_GPIOD
+
+#define RELAY_2_B_NEG_PIN                     GPIO_Pin_11
+#define RELAY_2_B_NEG_GPIO_PORT               GPIOD
+#define RELAY_2_B_NEG_GPIO_CLK                RCC_AHB1Periph_GPIOD
 
 #define ED1_PIN		                     GPIO_Pin_15
 #define ED1_GPIO_PORT		             GPIOB
