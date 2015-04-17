@@ -4,9 +4,9 @@
  * @author Daniel Pereira de Carvalho - P&D UFU / CEMIG
  * @version 1.0
  * @date 16/04/2012
- * @brief Módulo responsável pela geração das frequência de detecção de faltas
- *        para à terra. Para geração das frequências foi utilizada a técnica
- *        DDS otimizada para geração de tons entre 1KHz e 5KHz.
+ * @brief Mï¿½dulo responsï¿½vel pela geraï¿½ï¿½o das frequï¿½ncia de detecï¿½ï¿½o de faltas
+ *        para ï¿½ terra. Para geraï¿½ï¿½o das frequï¿½ncias foi utilizada a tï¿½cnica
+ *        DDS otimizada para geraï¿½ï¿½o de tons entre 1KHz e 5KHz.
  *
  *
  ******************************************************************************
@@ -350,15 +350,17 @@ int16_t lut[4096] = { 2047, 2050, 2053, 2056, 2060, 2063, 2066, 2069, 2072,
 		1997, 2000, 2003, 2006, 2009, 2012, 2016, 2019, 2022, 2025, 2028, 2031,
 		2034, 2038, 2041, 2044 };
 
+
+
 /* Private function prototypes ----------------------------------------------*/
 
 /**
  * void ddsInit(uint32_t f0)
  *
- * Descrição: Inicializa os parâmetros do módulo DDS para gerar o tom na
- *            frequência F0.
+ * Descriï¿½ï¿½o: Inicializa os parï¿½metros do mï¿½dulo DDS para gerar o tom na
+ *            frequï¿½ncia F0.
  *
- * Parâmetros: uint32_t f0: frequência desejada
+ * Parï¿½metros: uint32_t f0: frequï¿½ncia desejada
  *
  * Retorno:
  *
@@ -369,9 +371,11 @@ void ddsInit(uint32_t f0, float gain) {
 	//Calcula incremento do Acumulador de fase
 	uint32_t delta_acc = f0 * (DDS_ACC_MAX_VALUE / DDS_SAMPLE_FREQ);
 
+
 	dacStop();
 
 	uint32_t i = 0;
+
 	while (acc <= (UINT32_MAX - delta_acc)) {
 
 		//Tabela de 12 bits
@@ -393,9 +397,9 @@ void ddsInit(uint32_t f0, float gain) {
 /**
  * void ddsStop()
  *
- * Descrição: Interrompe a geração do sinal
+ * Descriï¿½ï¿½o: Interrompe a geraï¿½ï¿½o do sinal
  *
- * Parâmetros:
+ * Parï¿½metros:
  *
  * Retorno:
  *

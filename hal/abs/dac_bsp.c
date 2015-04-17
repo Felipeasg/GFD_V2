@@ -60,6 +60,7 @@ void dacSetWaveTableLength(int32_t length) {
  */
 void dacLoadWaveTableValueAt(uint16_t data, uint32_t index, float gain) {
 
+
 	wave_table[index] = (uint16_t)((float)data*gain);
 
 }

@@ -10,7 +10,7 @@
  @brief
 
  @note
- Copyright (C) ALTRIZ - Automação Industrial
+ Copyright (C) ALTRIZ - Automaï¿½ï¿½o Industrial
 
 
  *************************************************************************************/

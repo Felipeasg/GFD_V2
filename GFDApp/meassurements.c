@@ -14,7 +14,7 @@
 #define T  0.04
 #define Fop 13
 
-#define ACS_GAIN 17.837837837*17.837837837
+#define ACS_GAIN 1
 
 #define AD_VT_GAIN	3.3/4095
 #define AD_VP_GAIN	3.3/4095
@@ -100,7 +100,7 @@ static void meassurent_handler(volatile uint32_t* smp)
 	y[1] = y[2];
 
 
-	in = y[2] * y[2] * ACS_GAIN;
+	in = y[2] * y[2];
 
 //	out[1] = (1*in - out[0]);
 	out[1] = ((1*in - out[0])*k) + out[0];
@@ -117,7 +117,7 @@ static void meassurent_handler(volatile uint32_t* smp)
 
 float meassurements_GetCurrRMS(void)
 {
-	return sqrtf(out[1]);
+	return sqrtf(out[1])*8.6;
 }
 
 float meassurements_GetVT(void)

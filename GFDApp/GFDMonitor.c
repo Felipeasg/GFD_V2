@@ -8,6 +8,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#include "GFDMonitor.h"
 #include "GFDProtocol.h"
 #include "stm32f4_discovery.h"
 #include "dds.h"
@@ -31,20 +32,20 @@ uint8_t faultMask = 0x00;
 #define CLEAR_LED_POSITIVE_BUS_IN_FAULT		STM_EVAL_LEDOff(LED5)
 
 #define CLOSE_POSITIVE_BUS_RELAY			STM_EVAL_GFDRelayOn(RELAY_1BP); \
-											STM_EVAL_GFDRelayOn(RELAY_2BP); \
-											STM_EVAL_LEDOn(LED3);
+		STM_EVAL_GFDRelayOn(RELAY_2BP); \
+		STM_EVAL_LEDOn(LED3);
 
 #define OPEN_POSITIVE_BUS_RELAY				STM_EVAL_GFDRelayOff(RELAY_1BP); \
-											STM_EVAL_GFDRelayOff(RELAY_2BP); \
-											STM_EVAL_LEDOff(LED3);
+		STM_EVAL_GFDRelayOff(RELAY_2BP); \
+		STM_EVAL_LEDOff(LED3);
 
 #define CLOSE_NEGATIVE_BUS_RELAY			STM_EVAL_GFDRelayOn(RELAY_1BN); \
-											STM_EVAL_GFDRelayOn(RELAY_2BN); \
-											STM_EVAL_LEDOn(LED6);
+		STM_EVAL_GFDRelayOn(RELAY_2BN); \
+		STM_EVAL_LEDOn(LED6);
 
 #define OPEN_NEGATIVE_BUS_RELAY				STM_EVAL_GFDRelayOff(RELAY_1BN); \
-											STM_EVAL_GFDRelayOff(RELAY_2BN); \
-											STM_EVAL_LEDOff(LED6);
+		STM_EVAL_GFDRelayOff(RELAY_2BN); \
+		STM_EVAL_LEDOff(LED6);
 
 TTaskHandler *GFDMonitorTaskHandler;
 
@@ -69,8 +70,8 @@ void GFDMonitor_Init(void)
 	STM_EVAL_GFDRelayOff(RELAY_1BN);
 	STM_EVAL_GFDRelayOff(RELAY_2BN);
 
-//	STM_EVAL_GFDEDSensorInit(SENSOR_ED1, SENSOR_MODE_GPIO);
-//	STM_EVAL_GFDEDSensorInit(SENSOR_ED2, SENSOR_MODE_GPIO);
+	//	STM_EVAL_GFDEDSensorInit(SENSOR_ED1, SENSOR_MODE_GPIO);
+	//	STM_EVAL_GFDEDSensorInit(SENSOR_ED2, SENSOR_MODE_GPIO);
 
 	if(GFDMonitorTaskHandler != NULL)
 		schedulerDelete(&GFDMonitorTaskHandler);
@@ -99,7 +100,7 @@ static void GFDMonitorTask(void)
 	if(faultDetectEnable != 0x00)
 	{
 #if 1
-//		faultMask = checkBusFaultOnOff();
+		//		faultMask = checkBusFaultOnOff();
 		faultMask = checkBusFaultSensor();
 #else
 		if(FAULT_DETECT_ON_POSITIVE_BUS)
@@ -210,7 +211,7 @@ static void GFDMonitorTask(void)
 
 		if(generateSignalEnabled != 0)
 		{
-//			generateSignalEnabled = 0;
+			//			generateSignalEnabled = 0;
 			ddsInit(frequency, dacGain);
 		}
 		else
@@ -309,34 +310,44 @@ static uint8_t checkBusFaultSensor(void)
 	float f_vP = 0.0;
 	float f_vN = 0.0;
 
-	f_vT = meassurements_GetVT();
+	f_vT = meassurements_GetVT(); //obtem a tensao vT em porcentagem
+	f_vT = f_vT/1.2652014;
+
 	f_vP = meassurements_GetVP();
+	f_vP = f_vP/1.267619;
 
-	f_vN = f_vT - f_vP;
-
-	if(f_vP > f_vN + 0.1)
+	if(f_vP >= MIN_TO_CONSIDERERE_BUS_ACTIVE)
 	{
-		SET_LED_POSITIVE_BUS_IN_FAULT;
-				u8_fault |= (1 << 0);
+		if(f_vT >= (0.5 + HYSTERESIS_TO_DETECT_FAULT))
+		{
+			SET_LED_NEGATIVE_BUS_IN_FAULT;
+			u8_fault |= (1 << 1);
+		}
+		else
+		{
+			CLEAR_LED_NEGATIVE_BUS_IN_FAULT;
+			u8_fault &=~ (1 << 1);
+		}
+
+		if(f_vT <= (0.5 - HYSTERESIS_TO_DETECT_FAULT))
+		{
+			SET_LED_POSITIVE_BUS_IN_FAULT;
+			u8_fault |= (1 << 0);
+		}
+		else
+		{
+			CLEAR_LED_POSITIVE_BUS_IN_FAULT;
+			u8_fault &=~ (1 << 0);
+		}
+
+		if((f_vT > (0.5 + HYSTERESIS_TO_DETECT_FAULT))
+				&& (f_vT < (0.5 - HYSTERESIS_TO_DETECT_FAULT)))
+		{
+			SET_LED_POSITIVE_BUS_IN_FAULT;
+			SET_LED_NEGATIVE_BUS_IN_FAULT;
+		}
 	}
 	else
-	{
-		CLEAR_LED_POSITIVE_BUS_IN_FAULT;
-				u8_fault &=~ (1 << 0);
-	}
-
-	if(f_vN > f_vP + 0.1 )
-	{
-		SET_LED_NEGATIVE_BUS_IN_FAULT;
-				u8_fault |= (1 << 1);
-	}
-	else
-	{
-		CLEAR_LED_NEGATIVE_BUS_IN_FAULT;
-				u8_fault &=~ (1 << 1);
-	}
-
-	if(f_vP <= 0.1 && f_vN < 0.1)
 	{
 		static bool flag = false;
 
@@ -358,7 +369,6 @@ static uint8_t checkBusFaultSensor(void)
 			}
 		}
 	}
-
 	return u8_fault;
 
 }
